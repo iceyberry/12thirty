@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Change Username</title>
+<style>
+    /* CSS styles for the entire page */
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        overflow: hidden;
+    }
+
+    /* CSS styles for the header */
+    h1 {
+        position: relative;
+        top: 150px;
+        color: rgb(0, 0, 0);
+        margin-top: 2em;
+        background-color: rgba(0, 0, 0, 0.288);
+        padding: 10px;
+        display: inline-block;
+        border-radius: 10px;
+
+    }
+
+    /* CSS styles for the form */
+    form {
+        position: relative;
+        top: 150px;
+        margin: 0 auto;
+        width: 60%;
+        text-align: left;
+        background-color: rgba(0, 0, 0, 0.329);
+        padding: 1em;
+        border-radius: 10px;
+        
+    }
+
+   
+    /* CSS styles for the input fields */
+    input {
+        padding: 0.5em;
+        margin: 0.5em;
+        font-size: 1em;
+        width: 95%;
+        border-radius: 5px;
+        border: none;
+        padding-left: 1em;
+        font-weight: bold;
+        transition: all 0.2s;
+    }
+    input[type="text"]::placeholder{
+        color: lightgray;
+    }
+
+    /* CSS styles for the focus state of the input fields */
+    input:focus {
+        outline: none;
+        box-shadow: 0 0 10px #1E90FF;
+    }
+
+    /* CSS styles for the hover state of the input fields */
+    input:hover {
+        cursor: text;;
+    }
+
+    /* CSS styles for the submit button */
+    input[type="submit"] {
+        background-color: #2d9e1e;
+        color: white;
+        width: 98%;
+        padding: 0.5em 1em;
+        border-radius: 5px;
+        border: none;
+        margin-top: 1em;
+        transition: all 0.2s;
+    }
+
+    /* CSS styles for the hover state of the submit button */
+    input[type="submit"]:hover {
+        background-color: #3be025;
+        cursor: pointer;
+    }
+
+    body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('images/bg.webp');
+    background-size: cover;
+    filter: blur(10px);
+    background-color: green;
+    margin: -15px;
+    padding: 15px;
+    z-index: -1;
+}
+
+
+</style>
+
+</head>
+
+<body>
+    <h1>Change Username</h1>
+    <form>
+        <div id= "message"></div>
+        <input type="text" id="Name" name="Name" placeholder="Name" required>
+        <br>
+
+        <input type="submit" value="Submit" onclick="return submitForm()">
+    </form>
+    <script>
+
+        function submitForm() {
+  const messageDiv = document.querySelector('#message');
+  const name = document.getElementById("Name").value;
+  const url = `https://cors-anywhere.herokuapp.com/https://api.minecraftservices.com/minecraft/profile/name/${name}/available`;
+  const accessToken = "<%= token %>";
+
+  fetch(url, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`
+    }
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === "AVAILABLE") {
+        const checkUrl = `https://cors-anywhere.herokuapp.com/https://api.minecraftservices.com/minecraft/profile/namechange`;
+        fetch(checkUrl, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        })
+          .then(response => response.json())
+          .then(data => {
+            let changedAt = null;
+    if (data.hasOwnProperty("changedAt")) {
+      changedAt = Date.parse(data.changedAt);
+    } else if (data.hasOwnProperty("createdAt")) {
+      changedAt = Date.parse(data.createdAt);
+    }
+    const now = new Date();
+    if (isNaN(now.getTime())) {
+      throw new Error("Invalid now date");
+    }
+    const timeSinceLastChange = now - new Date(changedAt);
+    const millisecondsPerDay = 24 * 60 * 60 * 1000;
+    const daysSinceLastChange = timeSinceLastChange / millisecondsPerDay;
+    const daysUntilNextChange = 30 - daysSinceLastChange;
+            if (data.nameChangeAllowed) {
+                const url = `https://cors-anywhere.herokuapp.com/https://api.minecraftservices.com/minecraft/profile/name/${name}`;
+
+  fetch(url, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`
+    }
+  }).then(response => response.json())
+          .then(data => {
+            messageDiv.innerHTML = `<p style="color: DarkGreen; text-shadow: 0px 0px 5px black; text-align: center;">Name has been successfully changed to ${name}</p>`;
+          })
+            } else {
+                console.log(changedAt)
+                messageDiv.innerHTML = `<p style="color: DarkRed; text-shadow: 0px 0px 5px black; text-align: center;">Name has been changed recently. Please wait ${daysUntilNextChange.toFixed(0)} days before changing again.</p>`;
+            }
+          })
+          .catch(error => {
+            console.error("Error checking name change status:", error);
+            messageDiv.innerHTML = `<p style="color: DarkRed; text-shadow: 0px 0px 5px black; text-align: center;">An error occurred. Please try again later. ${error}</p>`;
+          });
+      } else if (data.status === "DUPLICATE") {
+        messageDiv.innerHTML = `<p style="color: DarkRed; text-shadow: 0px 0px 5px black; text-align: center;">This name is already taken. Please try another name.</p>`;
+      } else if (data.status === "NOT_ALLOWED") {
+        messageDiv.innerHTML = `<p style="color: DarkRed; text-shadow: 0px 0px 5px black; text-align: center;">This name is blacklisted. Please try another name.</p>`;
+      } else {
+        messageDiv.innerHTML = `<p style="color: DarkRed; text-shadow: 0px 0px 5px black; text-align: center;">An error occurred. Please try again later.</p>`;
+      }
+    })
+    .catch(error => {
+      console.error("Error checking name availability:", error);
+      messageDiv.innerHTML = `<p style="color: DarkRed; text-shadow: 0px 0px 5px black; text-align: center;">Invalid token.</p>`;
+    });
+
+  return false;
+}
+
+    </script>
+
+    
+</body>
+
+</html>
